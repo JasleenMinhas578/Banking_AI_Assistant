@@ -5,6 +5,7 @@ connection, so no model ever sees it, and the MCP server forwards it to the
 bank API, which checks it on every call.
 """
 
+import logging
 import re
 from typing import Any, Protocol
 
@@ -14,6 +15,8 @@ from mcp.client.streamable_http import streamable_http_client
 from mcp.types import TextContent
 
 from app.state import WRITE_TOOLS
+
+log = logging.getLogger(__name__)
 
 
 class ToolCallError(Exception):
@@ -51,12 +54,21 @@ class McpToolbox:
                     result = await client.call_tool(tool, args)
         except ToolCallError:
             raise
-        except Exception as exc:  # the MCP server is down or unreachable
+        except Exception as exc:  # the MCP server is down, unreachable, or misbehaving
+            log.warning("MCP call %s at %s failed: %s", tool, self.mcp_url, _describe(exc))
             raise ToolCallError("tools_unavailable", "The bank's tools aren't answering.") from exc
 
         if result.is_error:
             raise _error_from(result.content)
         return dict(result.structured_content or {})
+
+
+def _describe(exc: BaseException) -> str:
+    """The real cause, even when it's wrapped in an exception group."""
+    inner = getattr(exc, "exceptions", None)
+    if inner:
+        return "; ".join(_describe(e) for e in inner)
+    return f"{type(exc).__name__}: {exc}"
 
 
 def _error_from(content: list[Any]) -> ToolCallError:

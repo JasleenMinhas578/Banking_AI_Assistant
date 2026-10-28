@@ -92,6 +92,7 @@ class ConversationState(TypedDict, total=False):
     tool_result: dict[str, Any] | None
 
     # Counters that trigger a handoff
+    pin_hint: str | None  # "bad_format" when the last PIN wasn't 4 digits
     pin_attempts: int
     clarify_count: int
     tool_failures: int

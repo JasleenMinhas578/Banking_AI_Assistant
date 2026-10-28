@@ -8,6 +8,7 @@ bank API. The agent only ever learns whether it worked.
 
 import asyncio
 import getpass
+import logging
 import uuid
 from typing import Any
 
@@ -43,6 +44,8 @@ class BankGateway:
         return {"Authorization": f"Bearer {self.token}"}
 
     async def verify_pin(self, customer_code: str, pin: str) -> dict[str, Any]:
+        if not (pin.isdigit() and len(pin) == 4):
+            return {"verified": False, "bad_format": True}  # a typo, not a guess
         response = await self.http.post(
             "/sessions/verify",
             headers=self._auth(),
@@ -135,10 +138,13 @@ async def chat(config: Settings) -> None:
             output = await handle_pause(await agent.say(text), agent, bank, customer_code)
             print(f"\nPuffin: {output.text}")
             if output.ended:
+                if output.handoff_reason:
+                    print(f"  [demo] handoff reason: {output.handoff_reason}")
                 return
 
 
 def main() -> None:
+    logging.basicConfig(level=logging.WARNING, format="  [%(levelname)s] %(message)s")
     try:
         asyncio.run(chat(settings))
     except (KeyboardInterrupt, EOFError):

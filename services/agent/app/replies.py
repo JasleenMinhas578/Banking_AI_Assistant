@@ -16,6 +16,7 @@ POLICY_NOT_YET = (
 )  # phase 5 replaces this with answers from the policy documents
 PIN_PROMPT = "For your security, please enter your 4-digit PIN on the keypad."
 PIN_RETRY = "That PIN didn't match. Please try again on the keypad."
+PIN_FORMAT = "PINs are exactly 4 digits. Please enter yours on the keypad."
 CODE_PROMPT = (
     "Transfers over $1,000 need a one-time code. I've sent one to your phone. "
     "Please enter it on the keypad."

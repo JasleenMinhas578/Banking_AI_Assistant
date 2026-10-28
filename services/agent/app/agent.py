@@ -23,6 +23,7 @@ class AgentOutput:
     kind: Kind
     text: str
     ended: bool = False
+    handoff_reason: str | None = None  # why the call went to a human, for logs and demos
 
 
 class Agent:
@@ -72,10 +73,19 @@ class Agent:
         try:
             result = await self.graph.ainvoke(payload, config)
         except GraphRecursionError:
-            return AgentOutput("reply", HANDOFF["default"], ended=True)
+            return AgentOutput(
+                "reply", HANDOFF["default"], ended=True, handoff_reason="too_many_steps"
+            )
 
         pauses = result.get("__interrupt__") or []
         if pauses:
             pause = pauses[0].value
             return AgentOutput(pause["kind"], pause["prompt"])
-        return AgentOutput("reply", result.get("reply") or "", ended=bool(result.get("ended")))
+        ended = bool(result.get("ended"))
+        summary = result.get("handoff_summary") or {}
+        return AgentOutput(
+            "reply",
+            result.get("reply") or "",
+            ended=ended,
+            handoff_reason=summary.get("reason") if ended else None,
+        )

@@ -210,6 +210,23 @@ async def test_correct_pin(monkeypatch: pytest.MonkeyPatch) -> None:
     assert update["messages"] == [{"role": "caller", "text": "[PIN entered]"}]
 
 
+async def test_badly_formatted_pin_is_not_counted(monkeypatch: pytest.MonkeyPatch) -> None:
+    prompts = answers(monkeypatch, identity_node, {"verified": False, "bad_format": True})
+
+    update = await identity_node.IdentityNode(3).run({"pin_attempts": 1})
+
+    assert update == {"pin_hint": "bad_format"}
+    assert "didn't match" in prompts[0]["prompt"]
+
+
+async def test_after_a_bad_format_the_prompt_explains(monkeypatch: pytest.MonkeyPatch) -> None:
+    prompts = answers(monkeypatch, identity_node, {"verified": True})
+
+    await identity_node.IdentityNode(3).run({"pin_hint": "bad_format"})
+
+    assert prompts[0]["prompt"].startswith("PINs are exactly 4 digits")
+
+
 async def test_third_wrong_pin_hands_off(monkeypatch: pytest.MonkeyPatch) -> None:
     prompts = answers(monkeypatch, identity_node, {"verified": False})
 
