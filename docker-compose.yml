@@ -1,0 +1,18 @@
+# Our own services. The database is started separately by the Supabase CLI
+# (`make db`), so the two never fight over Postgres. Ollama runs natively on
+# macOS (no GPU inside Docker on a Mac) and is added in later phases.
+services:
+  bank_api:
+    build: ./services/bank_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Inside a container, 127.0.0.1 means the container itself.
+      # host.docker.internal reaches your Mac, where Supabase is listening.
+      DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

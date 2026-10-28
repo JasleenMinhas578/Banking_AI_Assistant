@@ -22,8 +22,13 @@ NOW = datetime(2026, 10, 28, 12, 0, tzinfo=UTC)
 
 def make_session(customer_id: UUID | None, verified: bool) -> Session:
     return Session(
-        id=uuid4(), customer_id=customer_id, token="tok", verified=verified,
-        step_up_verified=False, last_activity_at=NOW, expires_at=NOW,
+        id=uuid4(),
+        customer_id=customer_id,
+        token="tok",
+        verified=verified,
+        step_up_verified=False,
+        last_activity_at=NOW,
+        expires_at=NOW,
     )
 
 

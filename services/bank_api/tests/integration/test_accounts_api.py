@@ -28,8 +28,9 @@ def test_priya_sees_her_two_accounts_masked(client: TestClient) -> None:
 
     assert response.status_code == 200
     accounts = response.json()["accounts"]
-    summary = [(a["account_type"], a["masked_number"], a["balance_cents"], a["balance"])
-               for a in accounts]
+    summary = [
+        (a["account_type"], a["masked_number"], a["balance_cents"], a["balance"]) for a in accounts
+    ]
     assert summary == [
         ("chequing", "••••4821", 324050, "$3,240.50"),
         ("savings", "••••7710", 1250000, "$12,500.00"),

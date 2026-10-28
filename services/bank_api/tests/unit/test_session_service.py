@@ -9,6 +9,10 @@ import pytest
 from app.core.exceptions import (
     AccountLocked,
     InvalidCredentials,
+    InvalidOtp,
+    OtpAttemptsExhausted,
+    OtpExpired,
+    SessionAlreadyVerified,
     SessionExpired,
     SessionInvalid,
     VerificationRequired,
@@ -19,8 +23,12 @@ from tests.unit.fakes import FakeAudit, FakeClock, FakeCustomers, FakePins, Fake
 
 START = datetime(2026, 10, 28, 12, 0, tzinfo=UTC)
 PRIYA = Customer(
-    id=uuid4(), customer_code="C-1001", full_name="Priya Sharma",
-    pin_hash="2468", failed_pin_attempts=0, is_locked=False,
+    id=uuid4(),
+    customer_code="C-1001",
+    full_name="Priya Sharma",
+    pin_hash="2468",
+    failed_pin_attempts=0,
+    is_locked=False,
 )
 
 
@@ -43,6 +51,9 @@ def env() -> dict[str, Any]:
         idle_timeout=timedelta(minutes=10),
         clock=fakes["clock"],
         token_factory=lambda: "tok-123",
+        code_factory=lambda: "123456",
+        otp_ttl=timedelta(minutes=5),
+        otp_max_attempts=3,
     )
     return fakes
 
@@ -172,3 +183,96 @@ def test_verified_session_passes_the_verified_gate(env: dict[str, Any]) -> None:
     session = env["service"].require_verified("tok-123")
 
     assert session.customer_id == PRIYA.id
+
+
+def test_verifying_twice_is_refused_even_with_the_right_pin(env: dict[str, Any]) -> None:
+    env["service"].start()
+    env["service"].verify("tok-123", "C-1001", "2468")
+
+    with pytest.raises(SessionAlreadyVerified):
+        env["service"].verify("tok-123", "C-1001", "2468")
+
+
+def test_wrong_pin_on_a_verified_session_never_succeeds(env: dict[str, Any]) -> None:
+    env["service"].start()
+    env["service"].verify("tok-123", "C-1001", "2468")
+
+    with pytest.raises(SessionAlreadyVerified):
+        env["service"].verify("tok-123", "C-1001", "0000")
+
+
+def verified(env: dict[str, Any]) -> None:
+    env["service"].start()
+    env["service"].verify("tok-123", "C-1001", "2468")
+
+
+def test_step_up_needs_a_verified_session_first(env: dict[str, Any]) -> None:
+    env["service"].start()
+
+    with pytest.raises(VerificationRequired):
+        env["service"].start_step_up("tok-123")
+
+
+def test_right_code_steps_up_the_session(env: dict[str, Any]) -> None:
+    verified(env)
+    code, expires_at = env["service"].start_step_up("tok-123")
+
+    session = env["service"].verify_step_up("tok-123", code)
+
+    assert session.step_up_verified is True
+    assert expires_at == START + timedelta(minutes=5)
+    assert env["sessions"].otps == {}  # the code is used up
+
+
+def test_wrong_code_is_refused_and_counted(env: dict[str, Any]) -> None:
+    verified(env)
+    env["service"].start_step_up("tok-123")
+
+    with pytest.raises(InvalidOtp):
+        env["service"].verify_step_up("tok-123", "000000")
+
+    session_id = env["sessions"].get_by_token("tok-123").id
+    assert env["sessions"].otps[session_id].otp_attempts == 1
+
+
+def test_third_wrong_code_cancels_it(env: dict[str, Any]) -> None:
+    verified(env)
+    env["service"].start_step_up("tok-123")
+    for _ in range(2):
+        with pytest.raises(InvalidOtp):
+            env["service"].verify_step_up("tok-123", "000000")
+
+    with pytest.raises(OtpAttemptsExhausted):
+        env["service"].verify_step_up("tok-123", "000000")
+    with pytest.raises(OtpExpired):  # even the right code is now useless
+        env["service"].verify_step_up("tok-123", "123456")
+
+
+def test_code_expires_after_five_minutes(env: dict[str, Any]) -> None:
+    verified(env)
+    env["service"].start_step_up("tok-123")
+    env["clock"].now = START + timedelta(minutes=5)
+
+    with pytest.raises(OtpExpired):
+        env["service"].verify_step_up("tok-123", "123456")
+
+
+def test_code_cannot_be_used_twice(env: dict[str, Any]) -> None:
+    verified(env)
+    env["service"].start_step_up("tok-123")
+    env["service"].verify_step_up("tok-123", "123456")
+
+    with pytest.raises(OtpExpired):
+        env["service"].verify_step_up("tok-123", "123456")
+
+
+def test_code_never_appears_in_the_audit_log(env: dict[str, Any]) -> None:
+    verified(env)
+    env["service"].start_step_up("tok-123")
+    with pytest.raises(InvalidOtp):
+        env["service"].verify_step_up("tok-123", "999999")
+    env["service"].verify_step_up("tok-123", "123456")
+
+    audit_text = repr([row["details"] for row in env["audit"].rows])
+    assert "123456" not in audit_text
+    assert "999999" not in audit_text

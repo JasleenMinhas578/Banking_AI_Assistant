@@ -55,3 +55,28 @@ class StartSessionResponse(SessionStatus):
             step_up_verified=session.step_up_verified,
             expires_at=session.expires_at,
         )
+
+
+class StepUpStarted(BaseModel):
+    """A one-time code was issued. In a real bank it would go to the customer's phone."""
+
+    expires_at: datetime
+    message: str = Field(examples=["A one-time code was sent to your phone."])
+    demo_code: str | None = Field(
+        default=None,
+        description="Only filled in demo mode (OTP_DEMO_MODE), because there's no SMS here.",
+    )
+
+
+class StepUpRequest(BaseModel):
+    """The one-time code the caller received."""
+
+    code: SecretStr = Field(examples=["048213"])
+
+    @field_validator("code")
+    @classmethod
+    def code_is_six_digits(cls, value: SecretStr) -> SecretStr:
+        """Reject anything that isn't exactly six digits."""
+        if not re.fullmatch(r"\d{6}", value.get_secret_value()):
+            raise ValueError("The code must be exactly 6 digits")
+        return value

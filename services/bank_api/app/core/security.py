@@ -1,26 +1,35 @@
-"""PIN checking and session tokens."""
+"""PINs, one-time codes and session tokens."""
 
 import secrets
 
 import bcrypt
 
-# A hash of a PIN nobody has. When a customer code doesn't exist we still run
+# A hash of a secret nobody has. When a customer code doesn't exist we still run
 # one bcrypt check against this, so a wrong code takes as long as a wrong PIN.
 # Otherwise an attacker could time responses to learn which codes are real.
-_DUMMY_PIN_HASH = bcrypt.hashpw(b"not-a-real-pin", bcrypt.gensalt()).decode()
+_DUMMY_HASH = bcrypt.hashpw(b"not-a-real-secret", bcrypt.gensalt()).decode()
 
 
 class PinVerifier:
-    """Checks a PIN against its bcrypt hash."""
+    """Hashes and checks short secrets (PINs and one-time codes) with bcrypt."""
 
-    def check(self, pin: str, pin_hash: str | None) -> bool:
-        """Return True if the PIN matches. A missing hash always returns False."""
-        if pin_hash is None:
-            bcrypt.checkpw(pin.encode(), _DUMMY_PIN_HASH.encode())
+    def check(self, secret: str, secret_hash: str | None) -> bool:
+        """Return True if the secret matches. A missing hash always returns False."""
+        if secret_hash is None:
+            bcrypt.checkpw(secret.encode(), _DUMMY_HASH.encode())
             return False
-        return bcrypt.checkpw(pin.encode(), pin_hash.encode())
+        return bcrypt.checkpw(secret.encode(), secret_hash.encode())
+
+    def hash(self, secret: str) -> str:
+        """A bcrypt hash, safe to store. The secret itself never is."""
+        return bcrypt.hashpw(secret.encode(), bcrypt.gensalt()).decode()
 
 
 def new_session_token() -> str:
     """A long random token that's safe to put in a URL or header."""
     return secrets.token_urlsafe(32)
+
+
+def new_one_time_code() -> str:
+    """A random 6-digit code, like '048213'."""
+    return f"{secrets.randbelow(1_000_000):06d}"

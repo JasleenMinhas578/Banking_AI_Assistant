@@ -1,7 +1,7 @@
 """Load demo customers from profiles.yaml into the local database."""
 
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import bcrypt
@@ -20,7 +20,7 @@ def hash_pin(pin: str) -> str:
 
 def main() -> None:
     data = yaml.safe_load(PROFILES.read_text())
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     with psycopg.connect(os.environ["DATABASE_URL"]) as conn, conn.cursor() as cur:
         # Start fresh every time so seeding is repeatable.

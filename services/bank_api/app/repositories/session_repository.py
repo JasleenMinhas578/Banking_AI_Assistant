@@ -6,11 +6,9 @@ from uuid import UUID
 import psycopg
 from psycopg.rows import class_row
 
-from app.models.session import Session
+from app.models.session import OtpChallenge, Session
 
-_COLUMNS = (
-    "id, customer_id, token, verified, step_up_verified, last_activity_at, expires_at"
-)
+_COLUMNS = "id, customer_id, token, verified, step_up_verified, last_activity_at, expires_at"
 
 
 class SessionRepository:
@@ -56,6 +54,67 @@ class SessionRepository:
          returning {_COLUMNS}
             """,
             (customer_id, session_id),
+        )
+
+    def set_otp(self, session_id: UUID, otp_hash: str, expires_at: datetime) -> None:
+        """Store a new one-time code's hash, replacing any earlier code."""
+        self.conn.execute(
+            """
+            update sessions
+               set otp_hash = %s, otp_expires_at = %s, otp_attempts = 0
+             where id = %s
+            """,
+            (otp_hash, expires_at, session_id),
+        )
+
+    def get_otp(self, session_id: UUID) -> OtpChallenge | None:
+        """The code waiting to be checked, or None if there isn't one."""
+        with self.conn.cursor(row_factory=class_row(OtpChallenge)) as cur:
+            cur.execute(
+                """
+                select otp_hash, otp_expires_at, otp_attempts
+                  from sessions
+                 where id = %s and otp_hash is not null
+                """,
+                (session_id,),
+            )
+            return cur.fetchone()
+
+    def record_otp_failure(self, session_id: UUID) -> int:
+        """Count one wrong code. Returns the new number of wrong attempts."""
+        row = self.conn.execute(
+            """
+            update sessions set otp_attempts = otp_attempts + 1
+             where id = %s
+         returning otp_attempts
+            """,
+            (session_id,),
+        ).fetchone()
+        if row is None:
+            raise LookupError(f"session {session_id} disappeared")
+        return int(row[0])
+
+    def clear_otp(self, session_id: UUID) -> None:
+        """Cancel the current code, so it can never be used."""
+        self.conn.execute(
+            """
+            update sessions set otp_hash = null, otp_expires_at = null, otp_attempts = 0
+             where id = %s
+            """,
+            (session_id,),
+        )
+
+    def mark_step_up_verified(self, session_id: UUID) -> Session:
+        """The code was right: use it up and mark the session as stepped up."""
+        return self._one(
+            f"""
+            update sessions
+               set step_up_verified = true,
+                   otp_hash = null, otp_expires_at = null, otp_attempts = 0
+             where id = %s
+         returning {_COLUMNS}
+            """,
+            (session_id,),
         )
 
     def _one(self, sql: str, params: tuple[object, ...]) -> Session:

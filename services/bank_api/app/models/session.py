@@ -28,3 +28,12 @@ class Session:
         if not self.verified or self.customer_id is None:
             raise VerificationRequired()
         return self.customer_id
+
+
+@dataclass(frozen=True)
+class OtpChallenge:
+    """A one-time code waiting to be checked. Only its hash is ever stored."""
+
+    otp_hash: str = field(repr=False)
+    otp_expires_at: datetime
+    otp_attempts: int

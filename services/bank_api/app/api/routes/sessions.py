@@ -3,7 +3,14 @@
 from fastapi import APIRouter, status
 
 from app.api.deps import CurrentSession, SessionServiceDep, SessionToken
-from app.schemas.session import SessionStatus, StartSessionResponse, VerifyRequest
+from app.core.config import settings
+from app.schemas.session import (
+    SessionStatus,
+    StartSessionResponse,
+    StepUpRequest,
+    StepUpStarted,
+    VerifyRequest,
+)
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -15,7 +22,7 @@ def start_session(service: SessionServiceDep) -> StartSessionResponse:
 
 
 @router.post(
-    "/verify", 
+    "/verify",
     responses={
         401: {"description": "Wrong customer code or PIN, or no valid session"},
         423: {"description": "Account locked after too many wrong PINs"},
@@ -32,4 +39,30 @@ def verify_pin(
 @router.get("/me")
 def session_status(session: CurrentSession) -> SessionStatus:
     """Show whether this session is verified and when it times out."""
+    return SessionStatus.from_session(session)
+
+
+@router.post(
+    "/step-up",
+    responses={403: {"description": "Verify with your PIN first"}},
+)
+def start_step_up(token: SessionToken, service: SessionServiceDep) -> StepUpStarted:
+    """Send a one-time code, needed for transfers over $1,000. Asking again replaces it."""
+    code, expires_at = service.start_step_up(token)
+    return StepUpStarted(
+        expires_at=expires_at,
+        message="A one-time code was sent to your phone.",
+        demo_code=code if settings.otp_demo_mode else None,
+    )
+
+
+@router.post(
+    "/step-up/verify",
+    responses={401: {"description": "Wrong, expired or used-up code"}},
+)
+def verify_step_up(
+    body: StepUpRequest, token: SessionToken, service: SessionServiceDep
+) -> SessionStatus:
+    """Check the one-time code. Three wrong tries cancel it."""
+    session = service.verify_step_up(token, body.code.get_secret_value())
     return SessionStatus.from_session(session)

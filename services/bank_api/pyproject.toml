@@ -15,10 +15,27 @@ dependencies = [
 [dependency-groups]
 dev = [
     "httpx>=0.28",
+    "mypy>=1.15",
     "pytest>=8.3",
+    "ruff>=0.15",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
 markers = ["integration: needs the local Supabase database running"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# E/W: style, F: real bugs, I: import order, B: likely bugs, UP: modern syntax
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
