@@ -1,0 +1,37 @@
+[project]
+name = "agent"
+version = "0.1.0"
+description = "Puffin Bank's LangGraph agent"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx2>=2.16",
+    "langchain-ollama>=1.1",
+    "langgraph>=1.2",
+    "mcp>=2.3",
+    "pydantic-settings>=2.16.2",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15",
+    "pytest>=8.3",
+    "ruff>=0.15",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+warn_unused_ignores = true
+ignore_missing_imports = true

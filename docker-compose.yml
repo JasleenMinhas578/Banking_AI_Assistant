@@ -16,3 +16,21 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
+
+  mcp_server:
+    build: ./services/mcp_server
+    ports:
+      - "8100:8100"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Containers reach each other by service name on Compose's network.
+      BANK_API_URL: http://bank_api:8000
+      # Listen on all interfaces inside the container, so the port mapping works.
+      MCP_HOST: 0.0.0.0
+      # Never use a shared dev token in a container.
+      BANK_SESSION_TOKEN: ""
+    depends_on:
+      - bank_api
+    restart: unless-stopped

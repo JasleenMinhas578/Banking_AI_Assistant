@@ -1,0 +1,35 @@
+[project]
+name = "mcp-server"
+version = "0.1.0"
+description = "Puffin Bank's actions as MCP tools for the agent"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+    "mcp>=2.3",
+    "pydantic-settings>=2.16.2",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15",
+    "pytest>=8.3",
+    "ruff>=0.15",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true

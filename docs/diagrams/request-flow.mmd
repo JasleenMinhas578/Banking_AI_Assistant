@@ -1,0 +1,46 @@
+flowchart LR
+    caller(["Caller:<br/>“Move $200<br/>to savings”"])
+
+    subgraph ai["AI side · holds no bank credentials"]
+        direction TB
+        mod["1 · Moderation<br/>blocks attacks"]
+        route["2 · Router<br/>intent + risk tier"]
+        verified{"3 · PIN<br/>verified?"}
+        pin["Keypad PIN entry<br/>the model never sees it"]
+        plan["4 · prepare_transfer<br/>summary only,<br/>nothing moves"]
+        ok{"5 · Caller<br/>says yes?"}
+        stop(["Cancelled,<br/>nothing moves"])
+        mod --> route --> verified
+        verified -- no --> pin --> verified
+        verified -- yes --> plan --> ok
+        ok -- no --> stop
+    end
+
+    mcp["6 · MCP server<br/>confirm_transfer"]
+
+    subgraph bank["Bank side · has the final say"]
+        direction TB
+        api{"7 · Bank API checks<br/>session · ownership<br/>limits · one-time code<br/>· balance"}
+        refuse(["Refused<br/>+ audit log"])
+        move[("Money moves<br/>+ audit log<br/>all or nothing")]
+        api -- a rule fails --> refuse
+        api -- all pass --> move
+    end
+
+    reply(["Reply:<br/>“Done. Reference T-…”"])
+
+    caller --> mod
+    ok -- yes --> mcp --> api
+    refuse --> reply
+    move --> reply
+
+    classDef step fill:#ffffff,stroke:#8b5cf6,color:#1f2937
+    classDef good fill:#ecfdf5,stroke:#10b981,color:#065f46
+    classDef bad fill:#fef2f2,stroke:#ef4444,color:#991b1b
+    classDef ends fill:#eef2ff,stroke:#6366f1,color:#1f2937
+    class mod,route,pin,plan,verified,ok step
+    class api,move,mcp good
+    class refuse,stop bad
+    class caller,reply ends
+    style ai fill:#faf5ff,stroke:#c4b5fd,stroke-dasharray:6 4,color:#6d28d9
+    style bank fill:#f0fdf4,stroke:#86efac,stroke-dasharray:6 4,color:#15803d

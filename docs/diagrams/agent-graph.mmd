@@ -1,0 +1,35 @@
+flowchart TD
+    input(["Caller's words"]) --> moderate["1 · Moderate<br/>rules · phase 4 adds ML"]
+    moderate -- blocked --> respond
+    moderate -- passed --> route["2 · Route<br/>3B model: intent + confidence<br/>code: risk tier"]
+    route -- "unsure · policy · small talk" --> simple["Clarify or answer<br/>no bank tools"]
+    route -- banking --> verify{{"3 · Verify identity<br/>pause: PIN on keypad<br/>(skipped once verified)"}}
+    verify -- correct --> plan["4 · Plan<br/>7B model reads the details<br/>read-only tools only"]
+    plan -- "read only<br/>(balance, transactions)" --> execute
+    plan -- "changes data<br/>(freeze, dispute, transfer)" --> confirm{{"6 · Confirm<br/>pause: clear yes?"}}
+    plan -- "transfer over $1,000" --> stepup{{"5 · Step-up<br/>pause: one-time code"}}
+    stepup --> confirm
+    confirm -- yes --> execute["7 · Execute<br/>re-checks the gates<br/>calls the MCP tool"]
+    confirm -- "anything else" --> respond
+    plan -- "detail missing" --> respond
+    simple --> respond["8 · Respond<br/>fixed templates"]
+    execute --> respond
+    respond --> reply(["Reply"])
+
+    route -. "wants a person" .-> handoff["Hand off<br/>masked summary"]
+    verify -. "3 wrong PINs" .-> handoff
+    execute -. "tools fail twice" .-> handoff
+    handoff --> reply
+
+    classDef model fill:#f5f3ff,stroke:#8b5cf6,color:#1f2937
+    classDef pause fill:#fffbeb,stroke:#f59e0b,color:#78350f
+    classDef bank fill:#ecfdf5,stroke:#10b981,color:#065f46
+    classDef stop fill:#fef2f2,stroke:#ef4444,color:#991b1b
+    classDef plain fill:#ffffff,stroke:#9ca3af,color:#1f2937
+    classDef ends fill:#eef2ff,stroke:#6366f1,color:#1f2937
+    class route,plan model
+    class verify,stepup,confirm pause
+    class execute bank
+    class handoff stop
+    class moderate,simple,respond plain
+    class input,reply ends
