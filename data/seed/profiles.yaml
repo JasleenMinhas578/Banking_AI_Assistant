@@ -1,0 +1,66 @@
+# Demo customers for Puffin Bank. All data is fictional.
+# Amounts are in cents. Dates are "days_ago" so data always looks recent.
+
+customers:
+  - code: C-1001
+    name: Priya Sharma
+    pin: "2468"            # hashed by the seed script, never stored as-is
+    story: Everyday customer, healthy balances
+    accounts:
+      - type: chequing
+        last4: "4821"
+        balance_cents: 324050
+        card_last4: "9012"
+        transactions:
+          - { merchant: Costco, amount_cents: -18432, days_ago: 2 }
+          - { merchant: Tim Hortons, amount_cents: -645, days_ago: 1 }
+          - { merchant: Payroll Deposit, amount_cents: 245000, days_ago: 5 }
+          - { merchant: Amazon, amount_cents: -5999, days_ago: 0, status: pending }
+      - type: savings
+        last4: "7710"
+        balance_cents: 1250000
+
+  - code: C-1002
+    name: Marcus Lee
+    pin: "1357"
+    story: Lost his card, wants to freeze it
+    accounts:
+      - type: chequing
+        last4: "3365"
+        balance_cents: 87520
+        card_last4: "4417"
+        transactions:
+          - { merchant: Sobeys, amount_cents: -9214, days_ago: 1 }
+          - { merchant: Irving Gas, amount_cents: -6100, days_ago: 3 }
+
+  - code: C-1003
+    name: Elena Rossi
+    pin: "8642"
+    story: Spotted a suspicious charge she wants to dispute
+    accounts:
+      - type: chequing
+        last4: "5590"
+        balance_cents: 412275
+        card_last4: "2283"
+        transactions:
+          - { merchant: QZ Digital Store Singapore, amount_cents: -68999, days_ago: 4 }
+          - { merchant: Netflix, amount_cents: -1699, days_ago: 6 }
+          - { merchant: Air Canada, amount_cents: -54300, days_ago: 75 }  # outside 60-day dispute window
+
+  - code: C-1004
+    name: Sam Okafor
+    pin: "9753"
+    story: Low balance, keeps hitting limits
+    accounts:
+      - type: chequing
+        last4: "1148"
+        balance_cents: 4210
+        card_last4: "6630"
+        transactions:
+          - { merchant: Dollarama, amount_cents: -1250, days_ago: 1 }
+      - type: savings
+        last4: "2209"
+        balance_cents: 310000
+
+# The impostor has no record here on purpose. They have no PIN,
+# so every attempt to get past verification should fail.
