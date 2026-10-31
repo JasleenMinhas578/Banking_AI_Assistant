@@ -56,6 +56,8 @@ class Agent:
                 "clarify_count": 0,
                 "tool_failures": 0,
                 "step_up_attempts": 0,
+                "injection_strikes": 0,
+                "abuse_strikes": 0,
                 "awaiting": None,
             }
             self._started = True

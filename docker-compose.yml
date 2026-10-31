@@ -34,3 +34,23 @@ services:
     depends_on:
       - bank_api
     restart: unless-stopped
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/agent/Dockerfile
+    ports:
+      - "8200:8200"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      BANK_API_URL: http://bank_api:8000
+      MCP_URL: http://mcp_server:8100/mcp
+      # Ollama runs natively on the Mac; the container reaches it through the host.
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mcp_server
+    restart: unless-stopped

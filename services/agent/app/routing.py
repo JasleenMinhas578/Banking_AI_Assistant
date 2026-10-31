@@ -43,6 +43,8 @@ class Routes:
 
     @staticmethod
     def after_moderation(state: ConversationState) -> str:
+        if state.get("handoff_reason"):  # distress, repeated abuse or attacks
+            return "handoff"
         blocked = state.get("moderation", {}).get("verdict") == "block"
         return "respond" if blocked else "route"
 
@@ -55,6 +57,8 @@ class Routes:
             return "policy_answer"
         if state.get("risk_tier") == RiskTier.LOW:
             return "respond"
+        if state.get("moderation", {}).get("unsure"):  # the router node sets the reason too
+            return "handoff"
         return "plan" if state.get("verified") else "verify"
 
     @staticmethod

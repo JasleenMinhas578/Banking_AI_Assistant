@@ -11,9 +11,10 @@ CLARIFY = (
     "Sorry, I want to get this right. Is it about your balance or transactions, "
     "a card, a charge you don't recognise, or moving money?"
 )
-POLICY_NOT_YET = (
-    "I can't look up our policies just yet. " + HELP
-)  # phase 5 replaces this with answers from the policy documents
+POLICY_UNAVAILABLE = (
+    "I can't look up our policies right now. I can connect you with a Puffin Bank agent, "
+    "or help with your accounts, cards, disputes and transfers."
+)
 PIN_PROMPT = "For your security, please enter your 4-digit PIN on the keypad."
 PIN_RETRY = "That PIN didn't match. Please try again on the keypad."
 PIN_FORMAT = "PINs are exactly 4 digits. Please enter yours on the keypad."
@@ -23,11 +24,32 @@ CODE_PROMPT = (
 )
 CODE_RETRY = "That code didn't match. Please try again."
 CANCELLED = "Okay, I've cancelled that. Nothing has changed."
+
+# Moderation replies, by label
+INJECTION_REFUSAL = "I can't do that. " + HELP
+SOCIAL_ENGINEERING = (
+    "For everyone's security, I can only help account holders with their own accounts, "
+    "and everyone verifies themselves with their own PIN. I can't share or change anyone "
+    "else's details."
+)
+ABUSE_WARNING = (
+    "I want to help, but I can't continue if the language stays abusive. "
+    "What can I do for you today?"
+)
+OFF_TOPIC = "That's outside what I can help with. " + HELP
+
 HANDOFF = {
     "pin_locked": "For your security, I've locked access after too many PIN attempts. "
     "I'm connecting you with a Puffin Bank agent now.",
     "unclear_request": "Let me connect you with a Puffin Bank agent who can help.",
     "requested": "Of course. I'm connecting you with a Puffin Bank agent now.",
+    "distress": "I'm sorry you're going through this. I'm connecting you with a person at "
+    "Puffin Bank right now. If you're in danger or thinking about harming yourself, please "
+    "call 911, or call or text 988 for the Suicide Crisis Helpline.",
+    "abuse": "I'm going to pass this call to a Puffin Bank agent now.",
+    "repeated_attacks": "I can't help with this call, so I'm passing it to a Puffin Bank agent.",
+    "safety_check_unavailable": "I can't safely handle account requests right now, so I'm "
+    "connecting you with a Puffin Bank agent.",
     "default": "I'm connecting you with a Puffin Bank agent now. "
     "They'll have a summary, so you won't need to repeat yourself.",
 }

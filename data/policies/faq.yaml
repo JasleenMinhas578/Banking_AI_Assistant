@@ -1,0 +1,76 @@
+# Approved answers to the questions callers ask most. Each question is embedded;
+# a new question that is at least 90% similar gets the answer straight away, with
+# no language model involved. Only general policy questions belong here: never
+# anything that depends on the caller's own account.
+- question: What is the NSF fee?
+  answer: The non-sufficient funds fee is $45.00, charged when a payment is declined for lack of funds.
+  policy_id: POL-001
+- question: How much is the monthly fee on a chequing account?
+  answer: The chequing monthly fee is $4.95, and it's waived when your balance stays above $1,500 all month.
+  policy_id: POL-001
+- question: Is there a fee for a savings account?
+  answer: No, savings accounts have no monthly fee.
+  policy_id: POL-001
+- question: Do you charge for transfers between my accounts?
+  answer: No, transfers between your own Puffin Bank accounts are free.
+  policy_id: POL-001
+- question: What is the foreign currency fee?
+  answer: Purchases in a currency other than Canadian dollars have a 2.5% fee added.
+  policy_id: POL-001
+- question: How much does a replacement card cost?
+  answer: The first replacement card each year is free, then $10. There's no fee if the card was stolen or used fraudulently.
+  policy_id: POL-001
+- question: Do you have overdraft protection?
+  answer: No. A payment that would take your balance below $0 is declined, and there's no overdraft fee because the payment never goes through.
+  policy_id: POL-001
+- question: Are paper statements free?
+  answer: Paper statements cost $2.00 per month. Online statements are free.
+  policy_id: POL-001
+- question: Can you unfreeze my card?
+  answer: No. For your protection, only a Puffin Bank agent can unfreeze a card after confirming your identity. I can connect you with one.
+  policy_id: POL-002
+- question: How long does a replacement card take?
+  answer: Replacement cards arrive by mail in 5 to 7 business days.
+  policy_id: POL-002
+- question: What is the tap limit?
+  answer: Contactless payments are limited to $250 per purchase. Larger purchases need the chip and PIN.
+  policy_id: POL-002
+- question: Am I liable if my card is stolen?
+  answer: No. You're not responsible for purchases you didn't authorise, as long as you report the card promptly and haven't shared your PIN.
+  policy_id: POL-002
+- question: How long do I have to dispute a charge?
+  answer: You can dispute a purchase within 60 days of its posting date. Pending purchases can be disputed once they post, usually within 3 business days.
+  policy_id: POL-003
+- question: How long does a dispute take?
+  answer: Most disputes are resolved within 45 days, and you'll get a dispute reference number when it's opened.
+  policy_id: POL-003
+- question: Does it cost anything to dispute a charge?
+  answer: No, dispute investigations are free.
+  policy_id: POL-003
+- question: What is the transfer limit?
+  answer: Transfers are limited to $2,500 each and $5,000 in total per calendar day, Newfoundland time.
+  policy_id: POL-004
+- question: Can I send money to another person?
+  answer: Not through the assistant. Transfers are only between your own Puffin Bank accounts; an agent can help with payments to other people.
+  policy_id: POL-004
+- question: Why does a transfer need a one-time code?
+  answer: Transfers over $1,000 need a one-time code sent to your phone, in addition to your PIN. The code is valid for 5 minutes.
+  policy_id: POL-004
+- question: Can you reverse a transfer?
+  answer: No, the assistant can't reverse a completed transfer. You can move the money back yourself, or ask an agent for help.
+  policy_id: POL-004
+- question: What are the hours for talking to a person?
+  answer: Agents are available 8 am to 8 pm Newfoundland time. The assistant is available 24 hours a day. Say "agent" at any time.
+  policy_id: POL-005
+- question: How do you verify my identity?
+  answer: With your 4-digit PIN on the keypad, and a one-time code for transfers over $1,000. After 3 wrong PIN attempts the session locks and you're connected to an agent.
+  policy_id: POL-005
+- question: Can my family member check my account?
+  answer: No. Each customer must verify their own identity, even family members.
+  policy_id: POL-005
+- question: What information do you keep about my calls?
+  answer: A masked record of each call for 30 days, with PINs and card numbers removed. We never keep balances or transactions in that record.
+  policy_id: POL-005
+- question: How long does my session last?
+  answer: You stay verified for 10 minutes of inactivity. After that, I'll ask for your PIN again.
+  policy_id: POL-005

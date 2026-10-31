@@ -97,8 +97,11 @@ class ConversationState(TypedDict, total=False):
     clarify_count: int
     tool_failures: int
     step_up_attempts: int
+    injection_strikes: int
+    abuse_strikes: int
 
-    moderation: dict[str, Any]
+    moderation: dict[str, Any]  # label, tier, score, unsure: never the caller's words
+    policy: dict[str, Any]  # source (faq/rag/unknown), policy id, similarity, grounded
     handoff_reason: str | None
     handoff_summary: dict[str, Any] | None
     ended: bool

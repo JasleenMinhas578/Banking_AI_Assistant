@@ -3,7 +3,7 @@
 from typing import Any
 
 from app.llm import IntentRouter, ModelUnavailable
-from app.state import INTENT_RISK, ConversationState, Intent
+from app.state import INTENT_RISK, ConversationState, Intent, RiskTier
 
 
 class RouterNode:
@@ -32,4 +32,8 @@ class RouterNode:
         }
         if confidence >= self.min_confidence:
             update["clarify_count"] = 0
+        # Moderation tier 3 was down for this turn: general answers are fine, but
+        # nothing that touches an account goes ahead without a person.
+        if state.get("moderation", {}).get("unsure") and INTENT_RISK[intent] != RiskTier.LOW:
+            update["handoff_reason"] = "safety_check_unavailable"
         return update

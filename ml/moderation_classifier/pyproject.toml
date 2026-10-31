@@ -1,0 +1,28 @@
+[project]
+name = "moderation-classifier"
+version = "0.1.0"
+description = "Training and evaluation for Puffin Bank's tier-2 moderation classifier"
+requires-python = ">=3.12"
+dependencies = [
+    "scikit-learn>=1.7",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.15",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

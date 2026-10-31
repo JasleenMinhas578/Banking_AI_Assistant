@@ -1,0 +1,147 @@
+text,intent
+bye,other
+um put $50 into chequing please,transfer
+um the Uber charge is the wrong amount please,dispute
+um what did I spend yesterday please,transactions
+um what's the NSF charge please,policy_question
+agent please?,human
+um move $50 from my checking account to savings,transfer
+list my last purchases on savings please,transactions
+shift a hundred bucks over to chequing?,transfer
+"hi, can I move $1,500 into savings",transfer
+um list my last purchases on savings please,transactions
+there's a charge I didn't make,dispute
+um how much is in savings,balance
+"thanks, that's all please",other
+can I talk to a person,human
+what's the overdraft fee please,policy_question
+I paid Netflix but never got the order please,dispute
+"hi, how much did I spend at Tim Hortons",transactions
+how much is in my checking account,balance
+um is there a human I can talk to?,human
+um I need to move some money around?,transfer
+move a hundred bucks from savings to savings,transfer
+um get me a real person,human
+move $50 from chequing to savings?,transfer
+um how much did I spend at Uber,transactions
+um transfer 200 dollars to chequing?,transfer
+um what's my balance?,balance
+I lost my card?,freeze_card
+"hi, I lost my card please",freeze_card
+"hi, ok please",other
+"hi, dispute the Tim Hortons charge",dispute
+"hi, get me a real person",human
+"hi, never mind",other
+"hi, check my chequing balance please",balance
+what's the daily transfer limit?,policy_question
+um is there a fee for paper statements?,policy_question
+"um take $1,500 out of savings please",transfer
+um what's been going out of savings,transactions
+hello,other
+how are you,other
+what's been going out of chequing please,transactions
+"hi, thanks, that's all?",other
+um put a stop on my card please,freeze_card
+how much cash have I got,balance
+"hi, is there a human I can talk to please",human
+was there a charge from Netflix yesterday please,transactions
+"hi, send 200 dollars from savings to chequing",transfer
+I want my money back from Amazon,dispute
+um good morning please,other
+um there's a charge I didn't make please,dispute
+um any purchases yesterday?,transactions
+um how long does a dispute take please,policy_question
+"um put $1,500 into my checking account",transfer
+"hi, transfer me to a representative?",human
+um can I talk to a person,human
+put a stop on my card,freeze_card
+"hi, what's the tap limit?",policy_question
+"hi, what did I spend yesterday?",transactions
+transfer 200 dollars to my checking account?,transfer
+"hi, can I move $50 into savings?",transfer
+um how much did I spend at Uber please,transactions
+"hi, balance please",balance
+um what's the tap limit,policy_question
+take $50 out of savings,transfer
+"hi, I paid Costco but never got the order please",dispute
+what's the daily transfer limit,policy_question
+um that Amazon purchase wasn't me,dispute
+um never mind,other
+"hi, Costco charged me twice",dispute
+show my recent transactions please,transactions
+"um block my card, I think it was skimmed?",freeze_card
+um what's the overdraft fee please,policy_question
+"hi, list my last purchases on chequing?",transactions
+um put $50 into my checking account,transfer
+I don't recognise a charge from Amazon,dispute
+check my my checking account balance please,balance
+"hi, I need to move some money around please",transfer
+how much money do I have,balance
+"hi, I paid Costco but never got the order",dispute
+what's been going out of chequing,transactions
+um I don't recognise a charge from Netflix,dispute
+um what's the NSF charge?,policy_question
+"hi, what are your hours?",policy_question
+"hi, dispute the Amazon charge?",dispute
+um how much is in my checking account please,balance
+"hi, do I have enough for rent please",balance
+is there a fee for paper statements please,policy_question
+um someone has my debit card please,freeze_card
+"hi, thank you so much",other
+um any purchases yesterday,transactions
+um what are your hours,policy_question
+um I want my money back from Tim Hortons,dispute
+"hi, my card was stolen",freeze_card
+um agent please?,human
+um how are you,other
+um any purchases last month?,transactions
+read me my last transaction,transactions
+um balance please?,balance
+"hi, shift $50 over to my checking account please",transfer
+um send $50 from savings to chequing?,transfer
+um let me talk to a human,human
+"hi, what's my available balance",balance
+was there a charge from Uber yesterday please,transactions
+"hi, can you unfreeze cards",policy_question
+um freeze my card,freeze_card
+Tim Hortons charged me twice?,dispute
+"block my card, I think it was skimmed",freeze_card
+"hi, how long does a dispute take",policy_question
+um how much does a replacement card cost please,policy_question
+that Tim Hortons purchase wasn't me please,dispute
+"send $1,500 from savings to chequing",transfer
+"hi, the Costco charge is the wrong amount",dispute
+um the Netflix charge is the wrong amount please,dispute
+"hi, my wallet got nicked, kill the card please",freeze_card
+um what's my balance please,balance
+how do you verify me?,policy_question
+um transfer a hundred bucks to chequing please,transfer
+was there a charge from Amazon this week?,transactions
+"hi, Costco charged me twice?",dispute
+I want to speak with someone?,human
+um show my recent transactions please,transactions
+"my wallet got nicked, kill the card",freeze_card
+"hi, shift a hundred bucks over to savings",transfer
+um how do you verify me please,policy_question
+"hi, I'd like to speak to an agent?",human
+"hi, I don't recognise a charge from Amazon?",dispute
+"hi, do I have enough for rent",balance
+um hello please,other
+"hi, how much does a replacement card cost",policy_question
+um freeze my card please,freeze_card
+um I want to speak with someone please,human
+um can I move 200 dollars into savings?,transfer
+"hi, I want my money back from Spotify?",dispute
+"hi, dispute the Netflix charge?",dispute
+um bye?,other
+um check my savings balance please,balance
+"hi, good morning?",other
+I'd like to speak to an agent,human
+"hi, how much money do I have please",balance
+um someone has my debit card,freeze_card
+um that Uber purchase wasn't me please,dispute
+let me talk to a human?,human
+um I can't find my card anywhere?,freeze_card
+I can't find my card anywhere,freeze_card
+what did I spend this week please,transactions
+um take $50 out of savings?,transfer

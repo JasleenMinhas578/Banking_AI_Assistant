@@ -4,11 +4,16 @@ FakeTools answers exactly like the MCP server's tools (refs, masked numbers),
 for Priya's demo data, and records every call.
 """
 
+import zlib
 from typing import Any
 
 from pydantic import BaseModel
 
 from app.llm import DETAILS_FOR, NoDetails, RouteDecision
+from app.moderation import HybridModerator, RulesModerator
+from app.safety.classifier import Prediction
+from app.safety.judge import JudgeUnavailable
+from app.safety.types import Label
 from app.state import WRITE_TOOLS, Intent, Turn
 from app.toolbox import ToolCallError
 
@@ -158,3 +163,85 @@ class FakeTools:
                 "to_account": self._account("A2"),
             }
         raise AssertionError(f"unexpected tool {tool}")
+
+
+class FakeJudge:
+    """Tier 3 by keywords. `down = True` makes it fail like Ollama being off."""
+
+    RULES: list[tuple[str, Label]] = [
+        ("idiot", Label.ABUSE),
+        ("can't go on", Label.DISTRESS),
+        ("forcing me", Label.DISTRESS),
+        ("calling for my", Label.SOCIAL_ENGINEERING),
+        ("bitcoin", Label.OFF_TOPIC),
+        ("your rules", Label.PROMPT_INJECTION),
+    ]
+
+    def __init__(self) -> None:
+        self.down = False
+        self.calls = 0
+
+    async def judge(self, text: str) -> Label:
+        self.calls += 1
+        if self.down:
+            raise JudgeUnavailable("fake judge is down")
+        for keyword, label in self.RULES:
+            if keyword in text.lower():
+                return label
+        return Label.SAFE
+
+
+class FakeClassifier:
+    """Tier 2 that returns a fixed guess."""
+
+    def __init__(self, label: Label = Label.SAFE, score: float = 0.99, threshold: float = 0.8):
+        self.guess = Prediction(label, score)
+        self.threshold = threshold
+
+    def predict(self, text: str) -> Prediction:
+        return self.guess
+
+
+def fake_moderator(judge: FakeJudge | None = None) -> HybridModerator:
+    """Real rules, no classifier (so every turn reaches tier 3), and the fake judge."""
+    return HybridModerator(RulesModerator(), classifier=None, judge=judge or FakeJudge())
+
+
+class FakeEmbedder:
+    """A deterministic 'embedding': a bag of character trigrams, so similar text is close."""
+
+    DIMS = 256
+
+    async def embed(self, texts: list[str]) -> list[list[float]]:
+        out = []
+        for text in texts:
+            vector = [0.0] * self.DIMS
+            cleaned = "".join(ch for ch in text.lower() if ch.isalnum() or ch == " ")
+            for i in range(len(cleaned) - 2):
+                vector[zlib.crc32(cleaned[i : i + 3].encode()) % self.DIMS] += 1.0
+            out.append(vector)
+        return out
+
+
+class FakeChatModel:
+    """Answers with a fixed text, so the grounding check can be tested both ways."""
+
+    def __init__(self, *replies: str) -> None:
+        self.replies = list(replies)
+        self.calls = 0
+
+    async def ainvoke(self, messages: Any) -> Any:
+        self.calls += 1
+        return self.replies.pop(0) if len(self.replies) > 1 else self.replies[0]
+
+
+class FakeAnswerer:
+    """A policy answerer with a canned answer."""
+
+    def __init__(self, text: str = "According to our fee schedule, the NSF fee is $45.00.") -> None:
+        from app.policy.answerer import PolicyAnswer
+
+        self.result = PolicyAnswer(text, "POL-001", "rag", 0.8)
+
+    async def answer(self, question: str) -> Any:
+        return self.result

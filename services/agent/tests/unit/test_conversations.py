@@ -1,7 +1,8 @@
 """Whole conversations through the real LangGraph graph, with fake models and tools.
 
 Covers the paths from the design doc: PIN pause, confirmation pause, step-up
-pause, cancellation, injection, handoffs, and multi-turn follow-ups.
+pause, cancellation, injection, handoffs, multi-turn follow-ups, and the
+moderation outcomes (abuse, distress, tier 3 down).
 """
 
 import uuid
@@ -14,7 +15,14 @@ pytest.importorskip("langgraph.graph")
 from app.agent import Agent, AgentOutput  # noqa: E402
 from app.config import Settings  # noqa: E402
 from app.graph import build_graph  # noqa: E402
-from tests.unit.fakes import FakeExtractor, FakeRouter, FakeTools  # noqa: E402
+from tests.unit.fakes import (  # noqa: E402
+    FakeAnswerer,
+    FakeExtractor,
+    FakeJudge,
+    FakeRouter,
+    FakeTools,
+    fake_moderator,
+)
 
 pytestmark = pytest.mark.anyio
 PIN_OK = {"verified": True, "customer_code": "C-1001"}
@@ -28,11 +36,14 @@ class Call:
         self.tools = FakeTools()
         self.router = FakeRouter()
         self.extractor = FakeExtractor(**details)
+        self.judge = FakeJudge()
         self.graph = build_graph(
             Settings(),
             router=self.router,
             extractor=self.extractor,
             toolboxes=self.tools,
+            moderator=fake_moderator(self.judge),
+            answerer=FakeAnswerer(),
         )
         self.agent = Agent(
             self.graph, call_id=str(uuid.uuid4()), session_token="tok", recursion_limit=12
@@ -193,3 +204,45 @@ async def test_asking_for_a_person_hands_off() -> None:
     reply = await Call().say("can I talk to a person?")
 
     assert reply.ended is True
+
+
+async def test_abuse_gets_a_warning_then_a_person() -> None:
+    call = Call()
+
+    warning = await call.say("you idiot")
+    second = await call.say("you idiot, I said move it")
+
+    assert warning.ended is False and "abusive" in warning.text
+    assert (second.ended, second.handoff_reason) == (True, "abuse")
+    assert call.router.calls == 0
+
+
+async def test_distress_goes_straight_to_a_person() -> None:
+    call = Call()
+
+    reply = await call.say("someone is forcing me to send money")
+
+    assert (reply.ended, reply.handoff_reason) == (True, "distress")
+    assert "988" in reply.text
+    assert call.tools.calls == []
+
+
+async def test_with_tier_3_down_account_requests_go_to_a_person() -> None:
+    call = Call()
+    call.judge.down = True
+
+    general = await call.say("what's the fee for a wire?")
+    account = await call.say("what's my balance?")
+
+    assert general.ended is False
+    assert (account.ended, account.handoff_reason) == (True, "safety_check_unavailable")
+    assert call.tools.calls == []
+
+
+async def test_policy_questions_are_answered_without_a_pin() -> None:
+    call = Call()
+
+    reply = await call.say("what's the NSF fee?")
+
+    assert reply.kind == "reply" and reply.text.endswith("$45.00.")
+    assert call.tools.calls == []

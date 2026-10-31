@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [services/bank_api, services/mcp_server, services/agent, ml/moderation_classifier]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install
+        working-directory: ${{ matrix.service }}
+        run: uv sync
+      - name: Lint
+        working-directory: ${{ matrix.service }}
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Type check
+        if: matrix.service != 'ml/moderation_classifier'
+        working-directory: ${{ matrix.service }}
+        run: uv run mypy app
+      - name: Unit tests
+        working-directory: ${{ matrix.service }}
+        run: uv run pytest $( [ -d tests/unit ] && echo tests/unit || echo tests ) -q
+        # Live tests skip on their own when the bank API, MCP server or Ollama are absent.
+
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Scripted conversations with fake models
+        working-directory: services/agent
+        run: uv sync && uv run python -m app.evals --fake
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: evals/reports/latest-fake.md

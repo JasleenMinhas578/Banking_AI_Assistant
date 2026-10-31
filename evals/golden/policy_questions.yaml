@@ -1,0 +1,136 @@
+# Questions with known answers written from data/policies. `numbers` must all appear
+# in the spoken answer; `policy` is the document the best chunk should come from.
+# The last block are questions the policies cannot answer: the only right reply is
+# "I don't see that in our policies".
+answerable:
+  - q: What's the monthly fee on a chequing account?
+    policy: POL-001
+    numbers: ["4.95"]
+  - q: How much do I need to keep in chequing to avoid the monthly fee?
+    policy: POL-001
+    numbers: ["1,500"]
+  - q: Is there a monthly fee on savings?
+    policy: POL-001
+    numbers: ["0"]
+  - q: What do you charge for NSF?
+    policy: POL-001
+    numbers: ["45"]
+  - q: What happens if a payment bounces?
+    policy: POL-001
+    numbers: ["45"]
+  - q: What's the fee on foreign purchases?
+    policy: POL-001
+    numbers: ["2.5"]
+  - q: How much is a replacement card?
+    policy: POL-001
+    numbers: ["10"]
+  - q: Do paper statements cost anything?
+    policy: POL-001
+    numbers: ["2"]
+  - q: Do you offer overdraft?
+    policy: POL-001
+    numbers: []
+  - q: Is there a charge for moving money between my accounts?
+    policy: POL-001
+    numbers: ["0"]
+  - q: Can the assistant unfreeze my card?
+    policy: POL-002
+    numbers: []
+  - q: How long until a new card arrives?
+    policy: POL-002
+    numbers: ["5", "7"]
+  - q: What's the limit for tap payments?
+    policy: POL-002
+    numbers: ["250"]
+  - q: Am I responsible for purchases I didn't make on a stolen card?
+    policy: POL-002
+    numbers: []
+  - q: What should I do if I see a purchase I don't recognise?
+    policy: POL-002
+    numbers: []
+  - q: Can I freeze my card at night?
+    policy: POL-002
+    numbers: ["24"]
+  - q: How many days do I have to dispute a purchase?
+    policy: POL-003
+    numbers: ["60"]
+  - q: Can I dispute a pending purchase?
+    policy: POL-003
+    numbers: ["3"]
+  - q: How long does a dispute take to resolve?
+    policy: POL-003
+    numbers: ["45"]
+  - q: Can I open two disputes for the same purchase?
+    policy: POL-003
+    numbers: []
+  - q: What happens if my dispute is accepted?
+    policy: POL-003
+    numbers: []
+  - q: Is there a fee to dispute a charge?
+    policy: POL-003
+    numbers: []
+  - q: What's the most I can transfer at once?
+    policy: POL-004
+    numbers: ["2,500"]
+  - q: How much can I transfer in a day?
+    policy: POL-004
+    numbers: ["5,000"]
+  - q: Can I send money to my friend?
+    policy: POL-004
+    numbers: []
+  - q: When does a transfer need a one-time code?
+    policy: POL-004
+    numbers: ["1,000"]
+  - q: How long is the one-time code valid?
+    policy: POL-004
+    numbers: ["5"]
+  - q: Can you undo a transfer I made by mistake?
+    policy: POL-004
+    numbers: []
+  - q: Are transfers instant?
+    policy: POL-004
+    numbers: []
+  - q: Can a transfer overdraw my account?
+    policy: POL-004
+    numbers: ["0"]
+  - q: What can the assistant help me with?
+    policy: POL-005
+    numbers: []
+  - q: How do you check it's really me?
+    policy: POL-005
+    numbers: ["4"]
+  - q: What happens after three wrong PINs?
+    policy: POL-005
+    numbers: ["3"]
+  - q: Will you ever ask for my full card number?
+    policy: POL-005
+    numbers: []
+  - q: Can my wife check my balance for me?
+    policy: POL-005
+    numbers: []
+  - q: How long do you keep call records?
+    policy: POL-005
+    numbers: ["30"]
+  - q: When can I talk to a real person?
+    policy: POL-005
+    numbers: ["8"]
+  - q: How long do I stay logged in?
+    policy: POL-005
+    numbers: ["10"]
+  - q: How do I get an agent?
+    policy: POL-005
+    numbers: []
+  - q: How many digits does my account number get read out?
+    policy: POL-005
+    numbers: ["4"]
+unanswerable:
+  - What's the interest rate on a savings account?
+  - Do you offer mortgages?
+  - What's the exchange rate for US dollars today?
+  - Can I open a joint account?
+  - What are the fees on a business account?
+  - Do you have a credit card with travel points?
+  - Where is the nearest branch?
+  - What's the minimum age to open an account?
+  - Can I get a loan through the assistant?
+  - Do you charge for e-transfers to other banks?

@@ -49,7 +49,7 @@ class ActionPlannerNode:
     async def run(self, state: ConversationState) -> dict[str, Any]:
         if not state.get("verified"):  # routing already guarantees this; check anyway
             return {"reply": "I need to confirm it's you first."}
-        intent = Intent(state["intent"])
+        intent = Intent(state.get("intent") or Intent.OTHER)
         plan_for = self._plans.get(intent)
         if plan_for is None:
             return {"reply": None}

@@ -14,7 +14,7 @@ from app.nodes.router_node import RouterNode
 from app.nodes.tool_node import ToolNode
 from app.state import ConversationState, Intent
 from app.toolbox import ToolCallError
-from tests.unit.fakes import FakeExtractor, FakeRouter, FakeTools
+from tests.unit.fakes import FakeExtractor, FakeRouter, FakeTools, fake_moderator
 
 pytestmark = pytest.mark.anyio
 
@@ -46,7 +46,7 @@ def planner(tools: FakeTools, **details: dict[str, Any]) -> ActionPlannerNode:
 
 
 async def test_blocked_input_never_enters_the_history() -> None:
-    update = await ModerationNode(RulesModerator()).run({"input": "my PIN is 2468"})
+    update = await ModerationNode(fake_moderator()).run({"input": "my PIN is 2468"})
 
     assert update["moderation"]["verdict"] == "block"
     assert update["messages"] == [{"role": "caller", "text": "[PIN withheld]"}]
@@ -265,7 +265,7 @@ async def test_confirmation(monkeypatch: pytest.MonkeyPatch, said: str, confirme
 
 
 async def test_card_number_at_confirmation_is_not_stored(monkeypatch: pytest.MonkeyPatch) -> None:
-    answers(monkeypatch, confirmation_node, "4532 1234 5678 9012")
+    answers(monkeypatch, confirmation_node, "4111 1111 1111 1111")
 
     update = await confirmation_node.ConfirmationNode(RulesModerator()).run({"pending_action": {}})
 

@@ -17,6 +17,7 @@ import httpx2
 from app.agent import Agent, AgentOutput
 from app.config import Settings, settings
 from app.graph import build_graph
+from app.tracing import Tracer
 
 PROFILES = [
     ("Priya Sharma", "C-1001", "2468", "healthy balances"),
@@ -116,7 +117,7 @@ async def handle_pause(
 
 async def chat(config: Settings) -> None:
     name, customer_code, _ = pick_profile()
-    graph = build_graph(config)
+    graph = build_graph(config, tracer=Tracer(config.trace_path))
     async with httpx2.AsyncClient(base_url=config.bank_api_url, timeout=10) as http:
         bank = BankGateway(http)
         token = await bank.start_session()
@@ -145,6 +146,8 @@ async def chat(config: Settings) -> None:
 
 def main() -> None:
     logging.basicConfig(level=logging.WARNING, format="  [%(levelname)s] %(message)s")
+    # Demo: show which moderation tier decided each turn (labels only, never the words).
+    logging.getLogger("app.moderation").setLevel(logging.INFO)
     try:
         asyncio.run(chat(settings))
     except (KeyboardInterrupt, EOFError):

@@ -9,3 +9,12 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Built by `make policies` (embeddings depend on the local model)
+data/policies/index.json
+
+# Traces and eval output
+traces/
+
+# Voice model files (`make voice-models`)
+models/

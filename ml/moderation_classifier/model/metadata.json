@@ -1,0 +1,97 @@
+{
+  "threshold": 0.8,
+  "labels": [
+    "abuse",
+    "distress",
+    "off_topic",
+    "prompt_injection",
+    "safe",
+    "social_engineering"
+  ],
+  "sklearn_version": "1.9.1",
+  "trained_at": "2026-10-31T18:55:53+00:00",
+  "examples": 1971,
+  "templates": 279,
+  "validation": {
+    "method": "5-fold cross-validation grouped by template",
+    "at_threshold": {
+      "threshold": 0.8,
+      "escalated": 0.39776763064434295,
+      "missed": 0.018367346938775512,
+      "false_blocks": 0.02621231979030144,
+      "decided_accuracy": 0.9376579612468408
+    },
+    "sweep": [
+      {
+        "threshold": 0.5,
+        "escalated": 0.1004566210045662,
+        "missed": 0.0663265306122449,
+        "false_blocks": 0.09305373525557012,
+        "decided_accuracy": 0.8657642413987592
+      },
+      {
+        "threshold": 0.55,
+        "escalated": 0.13546423135464236,
+        "missed": 0.05714285714285714,
+        "false_blocks": 0.07863695937090433,
+        "decided_accuracy": 0.8773474178403756
+      },
+      {
+        "threshold": 0.6,
+        "escalated": 0.18467782851344494,
+        "missed": 0.04897959183673469,
+        "false_blocks": 0.05897771952817824,
+        "decided_accuracy": 0.8911014312383323
+      },
+      {
+        "threshold": 0.65,
+        "escalated": 0.2343987823439878,
+        "missed": 0.03877551020408163,
+        "false_blocks": 0.04849279161205767,
+        "decided_accuracy": 0.9052352551358516
+      },
+      {
+        "threshold": 0.7,
+        "escalated": 0.289193302891933,
+        "missed": 0.026530612244897958,
+        "false_blocks": 0.039318479685452164,
+        "decided_accuracy": 0.9186295503211992
+      },
+      {
+        "threshold": 0.75,
+        "escalated": 0.33333333333333337,
+        "missed": 0.022448979591836733,
+        "false_blocks": 0.03145478374836173,
+        "decided_accuracy": 0.9277016742770168
+      },
+      {
+        "threshold": 0.8,
+        "escalated": 0.39776763064434295,
+        "missed": 0.018367346938775512,
+        "false_blocks": 0.02621231979030144,
+        "decided_accuracy": 0.9376579612468408
+      },
+      {
+        "threshold": 0.85,
+        "escalated": 0.48655504819888384,
+        "missed": 0.009183673469387756,
+        "false_blocks": 0.019659239842726082,
+        "decided_accuracy": 0.9535573122529645
+      },
+      {
+        "threshold": 0.9,
+        "escalated": 0.6007102993404363,
+        "missed": 0.0020408163265306124,
+        "false_blocks": 0.011795543905635648,
+        "decided_accuracy": 0.9695044472681067
+      },
+      {
+        "threshold": 0.95,
+        "escalated": 0.7752409944190766,
+        "missed": 0.0,
+        "false_blocks": 0.003931847968545216,
+        "decided_accuracy": 0.9841986455981941
+      }
+    ]
+  }
+}
